@@ -1,0 +1,10 @@
+.gradle
+.eclipse
+.idea
+*.iml
+*.ipr
+*.iws
+
+eclipse
+
+*.txt
