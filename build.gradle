@@ -25,11 +25,31 @@ archivesBaseName = "InsanePatcher"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+repositories {
+    maven {
+        name "AppleCore"
+        url "http://www.ryanliptak.com/maven/"
+    }
+}
+
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
     runDir = "eclipse"
 
+    clientJvmArgs += "-Dfml.coreMods.load=info.tritusk.insanepatcher.InsanePatcher"
+    serverJvmArgs += "-Dfml.coreMods.load=info.tritusk.insanepatcher.InsanePatcher"
+
     replace "@VERSION@", project.version
+}
+
+jar {
+    manifest {
+        attributes 'FMLCorePlugin': 'info.tritusk.insanepatcher.InsanePatcher'
+    }
+}
+
+dependencies {
+    compile "applecore:AppleCore:1.7.10-1.3.2+222.2ae0a:api"
 }
 
 processResources {

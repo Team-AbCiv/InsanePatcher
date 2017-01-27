@@ -1,10 +1,13 @@
 package info.tritusk.insanepatcher;
 
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
+
+import java.util.Iterator;
 
 public class PatcherGourmaryllis implements IClassTransformer {
     @Override
@@ -16,20 +19,66 @@ public class PatcherGourmaryllis implements IClassTransformer {
 
             MethodNode method = node.methods.stream().filter(m -> m.name.equals("onUpdate")).findFirst().get();
 
-            //TODO do not use magic number. Use some kind of filter to find the correct pots
+            // Note:
+            // The assumption made here is that all food has superclass of ItemFood
+            // which has been checked in instanceof, however it is not the case in some mods
+            // namely AppleMilkTea and BambooMod.
+            // For those cases, special handlers must be added.
+            // Javascript may be used for easier expansion.
+            // Also, AppleMilkTea supports AppleCore, which can alleviate the issue (by let
+            // botania support AppleCore IEdible interface and then transform BambooMod to let
+            // it support AppleCore as well).
 
-            //Original 218, the jump opcode in stack.getItem() instanceof ItemFood
-            AbstractInsnNode itemFoodIfeq = method.instructions.get(218);
-            //Original 468, before the last one, which is 471 return
-            AbstractInsnNode forLoopGoto = method.instructions.getLast().getPrevious();
-            //Original 254, the assumption is that all food has superclass of ItemFood
-            //which has been checked in instanceof, however it is not the case in some mods
-            //namely AppleMilkTea and BambooMod.
-            //For those cases, special handlers must be added, probably using javascript.
-            //TODO
-            AbstractInsnNode checkcast = method.instructions.get(254);
+            //Original 218, the if-zero-then-jump in stack.getItem() instanceof ItemFood
+            AbstractInsnNode itemFoodInstanceof = null;
+            AbstractInsnNode itemFoodIfeq = null;
+            //Original 468, the main for-loop jump before the return opcode, which is 471 return
+            AbstractInsnNode forLoopGoto = null;
+            //Original 254, cast the checked ItemFood
+            AbstractInsnNode checkcast = null;
+
+            // TODO Review the node finding logic
+            Iterator<AbstractInsnNode> itr = method.instructions.iterator();
+            while (itr.hasNext()) {
+                AbstractInsnNode next = itr.next();
+                if (next instanceof TypeInsnNode ) {
+                    if (((TypeInsnNode)next).getOpcode() == Opcodes.INSTANCEOF) {
+                        itemFoodInstanceof = next;
+                        itemFoodIfeq = next.getNext();
+                    } else if (((TypeInsnNode)next).getOpcode() == Opcodes.CHECKCAST && ((TypeInsnNode)next).desc.contains("ItemFood")) {
+                        checkcast = next;
+                    }
+                } else if (next instanceof JumpInsnNode) {
+                    if (((JumpInsnNode)next).getOpcode() == Opcodes.GOTO && next.getNext().getOpcode() == Opcodes.RETURN) {
+                        forLoopGoto = next;
+                    }
+                }
+            }
+
+            if (itemFoodInstanceof != null && itemFoodIfeq != null && forLoopGoto != null & checkcast != null) {
+                // No idea yet
+                // maybe like this, for minimum overhaul sake:
+                // aload 6
+                // invokestatic info.tritusk.insanepatcher.PatcherGourmaryllis.isFood
+                // ifeq (original 468, ending goto of the loop)
+                // ...
+                // ...
+                // aload 6
+                // invokestatic info.tritusk.insanepatcher.PatcherGourmaryllis.getHungerValueRegen
+                // istore 7? // not sure yet
+                //
+            }
         }
 
         return basicClass;
+    }
+
+    public static boolean isFood(ItemStack item) {
+        return item.getItem() instanceof ItemFood; // TODO support AppleCore, so that it can indirectly support AppleMilkTea
+    }
+
+    // TODO Consider about the parameter
+    public static int getHungerValueRegen(ItemStack item) {
+        return 0;
     }
 }

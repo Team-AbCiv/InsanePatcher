@@ -2,8 +2,12 @@ package info.tritusk.insanepatcher;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
+import java.util.ArrayList;
 import java.util.Map;
 
+@IFMLLoadingPlugin.Name("InsanePatcher")
+@IFMLLoadingPlugin.MCVersion("1.7.10")
+@IFMLLoadingPlugin.TransformerExclusions({"net.minecraft", "net.minecraftforge", "cpw.mods.fml"})
 public class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override
@@ -15,7 +19,7 @@ public class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override
     public String getModContainerClass() {
-        return null;
+        return "info.tritusk.insanepatcher.InsanePatcherContainer";
     }
 
     @Override
@@ -25,7 +29,7 @@ public class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-
+        ((ArrayList<?>)data.get("coremodList")).forEach(System.out::println); // An arrayList that contains mod info
     }
 
     @Override
