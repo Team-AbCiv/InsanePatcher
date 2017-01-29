@@ -4,6 +4,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -13,72 +14,112 @@ public class PatcherGourmaryllis implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("vazkii.botania.common.block.subtile.generating.SubTileGourmaryllis")) {
+            System.out.println("Found Gourmaryllis, patching");
             ClassReader reader = new ClassReader(basicClass);
             ClassNode node = new ClassNode();
             reader.accept(node, 0);
 
             MethodNode method = node.methods.stream().filter(m -> m.name.equals("onUpdate")).findFirst().get();
 
-            // Note:
             // The assumption made here is that all food has superclass of ItemFood
             // which has been checked in instanceof, however it is not the case in some mods
-            // namely AppleMilkTea and BambooMod.
+            // namely AppleMilkTea and BambooMod. (Why the hell there is non-standard implementation)
             // For those cases, special handlers must be added.
-            // Javascript may be used for easier expansion.
             // Also, AppleMilkTea supports AppleCore, which can alleviate the issue (by let
             // botania support AppleCore IEdible interface and then transform BambooMod to let
             // it support AppleCore as well).
 
-            //Original 218, the if-zero-then-jump in stack.getItem() instanceof ItemFood
-            AbstractInsnNode itemFoodInstanceof = null;
-            AbstractInsnNode itemFoodIfeq = null;
+            //Original 211, the invokevirtual in the stack.getItem() instanceof ItemFood check
+            AbstractInsnNode itemFoodCheckIvkVrtl = null;
+            AbstractInsnNode itemFoodCheckInstanceof = null;
+
             //Original 468, the main for-loop jump before the return opcode, which is 471 return
             AbstractInsnNode forLoopGoto = null;
-            //Original 254, cast the checked ItemFood
-            AbstractInsnNode checkcast = null;
 
-            // TODO Review the node finding logic
+            //Original 254, cast the checked ItemFood
+            AbstractInsnNode itemFoodValueIvkVrtl = null;
+
             Iterator<AbstractInsnNode> itr = method.instructions.iterator();
             while (itr.hasNext()) {
                 AbstractInsnNode next = itr.next();
-                if (next instanceof TypeInsnNode ) {
-                    if (((TypeInsnNode)next).getOpcode() == Opcodes.INSTANCEOF) {
-                        itemFoodInstanceof = next;
-                        itemFoodIfeq = next.getNext();
-                    } else if (((TypeInsnNode)next).getOpcode() == Opcodes.CHECKCAST && ((TypeInsnNode)next).desc.contains("ItemFood")) {
-                        checkcast = next;
+                if (next instanceof MethodInsnNode) {
+                    if (next.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                        if (((MethodInsnNode)next).name.equals("func_150905_g")) {
+                            // func_150905_g is the method to get hunger value regen,
+                            // which should always be obfuscated in 1.7.10
+                            itemFoodValueIvkVrtl = next;
+                        }
+                    }
+                } else if (next instanceof TypeInsnNode) {
+                    if (next.getOpcode() == Opcodes.INSTANCEOF) {
+                        itemFoodCheckIvkVrtl = next.getPrevious();
+                        itemFoodCheckInstanceof = next; //This is the only instanceof instruction in onUpdate() method.
                     }
                 } else if (next instanceof JumpInsnNode) {
-                    if (((JumpInsnNode)next).getOpcode() == Opcodes.GOTO && next.getNext().getOpcode() == Opcodes.RETURN) {
-                        forLoopGoto = next;
+                    if (next.getOpcode() == Opcodes.GOTO) {
+                        if (next.getNext().getNext().getNext().getNext().getNext().getNext() == null) {
+                            forLoopGoto = next;
+                        }
                     }
                 }
             }
 
-            if (itemFoodInstanceof != null && itemFoodIfeq != null && forLoopGoto != null & checkcast != null) {
-                // No idea yet
-                // maybe like this, for minimum overhaul sake:
+            if (itemFoodCheckIvkVrtl != null && itemFoodCheckInstanceof != null && forLoopGoto != null && itemFoodValueIvkVrtl != null) {
+                // It will become something like this:
                 // aload 6
                 // invokestatic info.tritusk.insanepatcher.PatcherGourmaryllis.isFood
-                // ifeq (original 468, ending goto of the loop)
+                // ifeq ??? //I didn't calculate the result line number
                 // ...
                 // ...
                 // aload 6
                 // invokestatic info.tritusk.insanepatcher.PatcherGourmaryllis.getHungerValueRegen
-                // istore 7? // not sure yet
-                //
-            }
-        }
+                // istore 7
 
+                method.instructions.set(itemFoodCheckIvkVrtl.getNext().getNext(),
+                        new JumpInsnNode(Opcodes.IFEQ, (LabelNode)forLoopGoto.getPrevious().getPrevious().getPrevious()));
+                method.instructions.set(itemFoodCheckIvkVrtl,
+                        new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                "info/tritusk/insanepatcher/PatcherGourmaryllis",
+                                "isFood",
+                                "(Lnet/minecraft/item/ItemStack;)Z", false));
+                method.instructions.remove(itemFoodCheckInstanceof);
+
+                method.instructions.remove(itemFoodValueIvkVrtl.getPrevious().getPrevious().getPrevious());
+                method.instructions.remove(itemFoodValueIvkVrtl.getPrevious().getPrevious());
+                method.instructions.remove(itemFoodValueIvkVrtl.getPrevious());
+                method.instructions.set(itemFoodValueIvkVrtl,
+                        new MethodInsnNode(Opcodes.INVOKESTATIC,
+                                "info/tritusk/insanepatcher/PatcherGourmaryllis",
+                                "getHungerValueRegen",
+                                "(Lnet/minecraft/item/ItemStack;)I", false));
+
+            } else {
+                System.out.println("But this insane patcher failed to tweak Gourmaryllis, so nothing will happen. This is not an error.");
+                return basicClass;
+            }
+
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            node.accept(writer);
+            return writer.toByteArray();
+        }
         return basicClass;
     }
+
+    // TODO Separate out, since I am not sure if the ItemStack param will cause ItemStack class to load earlier?
 
     public static boolean isFood(ItemStack item) {
         return item.getItem() instanceof ItemFood; // TODO support AppleCore, so that it can indirectly support AppleMilkTea
     }
 
-    // TODO Consider about the parameter
     public static int getHungerValueRegen(ItemStack item) {
+        System.out.println("We successfully sneak into Gourmaryllis!");
+
+        if (item.getItem() instanceof ItemFood) {
+            return ((ItemFood)item.getItem()).func_150905_g(item);
+        }
+
+        // TODO AppleCore support
+
         return 0;
     }
 }
