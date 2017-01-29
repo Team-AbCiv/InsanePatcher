@@ -112,11 +112,11 @@ public class PatcherGourmaryllis implements IClassTransformer {
     }
 
     public static int getHungerValueRegen(ItemStack item) {
-        System.out.println("We successfully sneak into Gourmaryllis!");
-
         if (item.getItem() instanceof ItemFood) {
             return ((ItemFood)item.getItem()).func_150905_g(item);
         }
+
+
 
         // TODO AppleCore support
 

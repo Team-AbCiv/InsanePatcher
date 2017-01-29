@@ -8,7 +8,6 @@ import java.util.Map;
 @IFMLLoadingPlugin.Name("InsanePatcher")
 @IFMLLoadingPlugin.MCVersion("1.7.10")
 @IFMLLoadingPlugin.SortingIndex(987654721) // Reference to the 9876547210.33 incident; but that number cant fit into int
-@IFMLLoadingPlugin.TransformerExclusions({"net.minecraft", "com.mojang", "tv.twitch", "io.netty"}) //no drama please
 public class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override

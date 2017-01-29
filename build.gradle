@@ -50,6 +50,8 @@ jar {
 
 dependencies {
     compile "applecore:AppleCore:1.7.10-1.3.2+222.2ae0a:api"
+
+    runtime "applecore:AppleCore:1.7.10-1.3.2+222.2ae0a:deobf"
 }
 
 processResources {
