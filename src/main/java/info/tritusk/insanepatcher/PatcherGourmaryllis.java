@@ -3,10 +3,14 @@ package info.tritusk.insanepatcher;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.common.MinecraftForge;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
+import squeek.applecore.api.food.FoodEvent;
+import squeek.applecore.api.food.FoodValues;
+import squeek.applecore.api.food.IEdible;
 
 import java.util.Iterator;
 
@@ -105,21 +109,20 @@ public class PatcherGourmaryllis implements IClassTransformer {
         return basicClass;
     }
 
-    // TODO Separate out, since I am not sure if the ItemStack param will cause ItemStack class to load earlier?
-
-    public static boolean isFood(ItemStack item) {
-        return item.getItem() instanceof ItemFood; // TODO support AppleCore, so that it can indirectly support AppleMilkTea
+    public static boolean isFood(ItemStack stack) {
+        return stack.getItem() instanceof ItemFood || (Constants.APPLECORE_EXIST && stack.getItem() instanceof IEdible);
     }
 
-    public static int getHungerValueRegen(ItemStack item) {
-        if (item.getItem() instanceof ItemFood) {
-            return ((ItemFood)item.getItem()).func_150905_g(item);
+    public static int getHungerValueRegen(ItemStack stack) {
+        if (Constants.APPLECORE_EXIST && stack.getItem() instanceof IEdible) {
+            FoodValues foodValues = ((IEdible)stack.getItem()).getFoodValues(stack);
+            FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, foodValues);
+            MinecraftForge.EVENT_BUS.post(event);
+            return foodValues.hunger; // Remember that player will not affect this value
+        } else if (stack.getItem() instanceof ItemFood) {
+            return ((ItemFood)stack.getItem()).func_150905_g(stack);
+        } else {
+            return 0;
         }
-
-
-
-        // TODO AppleCore support
-
-        return 0;
     }
 }

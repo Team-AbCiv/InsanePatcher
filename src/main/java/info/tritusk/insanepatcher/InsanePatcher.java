@@ -13,7 +13,7 @@ public class InsanePatcher implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
         return new String[] {
-          "info.tritusk.insanepatcher.PatcherGourmaryllis"
+                "info.tritusk.insanepatcher.PatcherGourmaryllis"
         };
     }
 
