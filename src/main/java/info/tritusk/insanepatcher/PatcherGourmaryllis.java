@@ -15,10 +15,10 @@ import squeek.applecore.api.food.IEdible;
 import java.util.Iterator;
 
 public class PatcherGourmaryllis implements IClassTransformer {
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("vazkii.botania.common.block.subtile.generating.SubTileGourmaryllis")) {
-            System.out.println("Found Gourmaryllis, patching");
             ClassReader reader = new ClassReader(basicClass);
             ClassNode node = new ClassNode();
             reader.accept(node, 0);
@@ -96,17 +96,15 @@ public class PatcherGourmaryllis implements IClassTransformer {
                                 "info/tritusk/insanepatcher/PatcherGourmaryllis",
                                 "getHungerValueRegen",
                                 "(Lnet/minecraft/item/ItemStack;)I", false));
-
+                ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+                node.accept(writer);
+                return writer.toByteArray();
             } else {
-                System.out.println("But this insane patcher failed to tweak Gourmaryllis, so nothing will happen. This is not an error.");
                 return basicClass;
             }
-
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            node.accept(writer);
-            return writer.toByteArray();
+        } else {
+            return basicClass;
         }
-        return basicClass;
     }
 
     public static boolean isFood(ItemStack stack) {
@@ -114,15 +112,16 @@ public class PatcherGourmaryllis implements IClassTransformer {
     }
 
     public static int getHungerValueRegen(ItemStack stack) {
+        // This assumes that the food class does not inherit from ItemFood.
         if (Constants.APPLECORE_EXIST && stack.getItem() instanceof IEdible) {
             FoodValues foodValues = ((IEdible)stack.getItem()).getFoodValues(stack);
             FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, foodValues);
             MinecraftForge.EVENT_BUS.post(event);
-            return foodValues.hunger; // Remember that player will not affect this value
+            return foodValues.hunger;
         } else if (stack.getItem() instanceof ItemFood) {
             return ((ItemFood)stack.getItem()).func_150905_g(stack);
         } else {
-            return 0;
+            return 0; // Cover all cases
         }
     }
 }

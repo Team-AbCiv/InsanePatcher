@@ -2,7 +2,6 @@ package info.tritusk.insanepatcher;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 @IFMLLoadingPlugin.Name("InsanePatcher")
@@ -29,7 +28,7 @@ public class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        ((ArrayList<?>)data.get("coremodList")).forEach(System.out::println); // An arrayList that contains mod info
+        // no op
     }
 
     @Override
