@@ -1,9 +1,12 @@
 package info.tritusk.insanepatcher;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
 
@@ -28,5 +31,11 @@ public class InsanePatcherContainer extends DummyModContainer {
     public boolean registerBus(EventBus bus, LoadController controller) {
         bus.register(this);
         return true;
+    }
+
+    @Subscribe
+    public void init(FMLInitializationEvent event) {
+        System.out.println("Received InitEvent: " + event);
+        MinecraftForge.EVENT_BUS.register(new PatcherTEItems());
     }
 }
