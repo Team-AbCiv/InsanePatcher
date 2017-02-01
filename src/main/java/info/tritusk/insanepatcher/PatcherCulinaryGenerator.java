@@ -31,7 +31,7 @@ public class PatcherCulinaryGenerator implements IClassTransformer {
                 methodGenLevelGetter.visitMethodInsn(Opcodes.INVOKESTATIC, "info/tritusk/insanepatcher/FoodUtil", "isFood", "(Lnet/minecraft/item/ItemStack;)Z", false);
                 Label labelCakeCheck0 = new Label();
                 methodGenLevelGetter.visitJumpInsn(Opcodes.IFEQ, labelCakeCheck0);
-                methodGenLevelGetter.visitVarInsn(Opcodes.ALOAD, 0); //why?
+                methodGenLevelGetter.visitVarInsn(Opcodes.ALOAD, 0);
                 methodGenLevelGetter.visitVarInsn(Opcodes.ALOAD, 1);
                 methodGenLevelGetter.visitMethodInsn(Opcodes.INVOKESTATIC, "info/tritusk/insanepatcher/FoodUtil", "getHungerValueRegen", "(Lnet/minecraft/item/ItemStack;)I", false);
                 methodGenLevelGetter.visitInsn(Opcodes.I2D);

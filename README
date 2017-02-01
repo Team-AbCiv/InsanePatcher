@@ -12,3 +12,5 @@ Run it with Java 8.
 Feature list:
 * Let Gourmaryllis accept AppleCore's IEdible as valid food type
 * Fix the bug of "repairing" ThermalExpansion stuff which yield into creative-only stuff
+* Fix a crash when both ThermalFoundation and Sextiary Sector present
+* Make Extra Utilities' Culinary Generator affected by Hunger Overhaul
