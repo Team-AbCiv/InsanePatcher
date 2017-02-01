@@ -83,7 +83,7 @@ public class PatcherGourmaryllis implements IClassTransformer {
                         new JumpInsnNode(Opcodes.IFEQ, (LabelNode)forLoopGoto.getPrevious().getPrevious().getPrevious()));
                 method.instructions.set(itemFoodCheckIvkVrtl,
                         new MethodInsnNode(Opcodes.INVOKESTATIC,
-                                "info/tritusk/insanepatcher/PatcherGourmaryllis",
+                                "info/tritusk/insanepatcher/FoodUtil",
                                 "isFood",
                                 "(Lnet/minecraft/item/ItemStack;)Z", false));
                 method.instructions.remove(itemFoodCheckInstanceof);
@@ -93,7 +93,7 @@ public class PatcherGourmaryllis implements IClassTransformer {
                 method.instructions.remove(itemFoodValueIvkVrtl.getPrevious());
                 method.instructions.set(itemFoodValueIvkVrtl,
                         new MethodInsnNode(Opcodes.INVOKESTATIC,
-                                "info/tritusk/insanepatcher/PatcherGourmaryllis",
+                                "info/tritusk/insanepatcher/FoodUtil",
                                 "getHungerValueRegen",
                                 "(Lnet/minecraft/item/ItemStack;)I", false));
                 ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -107,21 +107,4 @@ public class PatcherGourmaryllis implements IClassTransformer {
         }
     }
 
-    public static boolean isFood(ItemStack stack) {
-        return stack.getItem() instanceof ItemFood || (Constants.APPLECORE_EXIST && stack.getItem() instanceof IEdible);
-    }
-
-    public static int getHungerValueRegen(ItemStack stack) {
-        // This assumes that the food class does not inherit from ItemFood.
-        if (Constants.APPLECORE_EXIST && stack.getItem() instanceof IEdible) {
-            FoodValues foodValues = ((IEdible)stack.getItem()).getFoodValues(stack);
-            FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, foodValues);
-            MinecraftForge.EVENT_BUS.post(event);
-            return foodValues.hunger;
-        } else if (stack.getItem() instanceof ItemFood) {
-            return ((ItemFood)stack.getItem()).func_150905_g(stack);
-        } else {
-            return 0; // Cover all cases
-        }
-    }
 }
