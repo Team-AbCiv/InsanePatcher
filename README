@@ -1,7 +1,6 @@
 Insane Patcher
 
-Created per request from my friends, this patcher will insanely, inefficiently and brutally fix various annoying stuff
-that modpack creator encountered with.
+Created per request from my friends, this patcher will insanely, inefficiently and brutally fix various annoying stuff that modpack creator encountered with.
 
 Targeting 1.7.10.
 
@@ -12,5 +11,5 @@ Run it with Java 8.
 Feature list:
 * Let Gourmaryllis accept AppleCore's IEdible as valid food type
 * Fix the bug of "repairing" ThermalExpansion stuff which yield into creative-only stuff
-* Fix a crash when both ThermalFoundation and Sextiary Sector present
-* Make Extra Utilities' Culinary Generator affected by Hunger Overhaul
+* Fix a crash when both ThermalFoundation and SextiarySector present
+* Make Extra Utilities' Culinary Generator be affected by Hunger Overhaul

@@ -1,16 +1,10 @@
 package info.tritusk.insanepatcher;
 
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraftforge.common.MinecraftForge;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-import squeek.applecore.api.food.FoodEvent;
-import squeek.applecore.api.food.FoodValues;
-import squeek.applecore.api.food.IEdible;
 
 import java.util.Iterator;
 

@@ -26,7 +26,7 @@ public class PatcherTEItems {
         // where the exp cost is always as 3 as maximum.
         //
         // Do note that this is a temporary fix, meaning that this patch is solely temporary solution.
-        if (event.right.getItem().getClass().getName().startsWith("cofh")) {
+        if (event.right.getItem().getClass().getName().startsWith("cofh.thermalexpansion")) {
             // Only detect the second slot, so that using vanilla enchantment book won't be affected.
             event.setCanceled(true);
         }

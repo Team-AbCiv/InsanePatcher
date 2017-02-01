@@ -35,7 +35,6 @@ public class InsanePatcherContainer extends DummyModContainer {
 
     @Subscribe
     public void init(FMLInitializationEvent event) {
-        System.out.println("Received InitEvent: " + event);
         MinecraftForge.EVENT_BUS.register(new PatcherTEItems());
     }
 }
