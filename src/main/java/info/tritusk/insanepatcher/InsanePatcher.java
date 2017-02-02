@@ -14,7 +14,8 @@ public class InsanePatcher implements IFMLLoadingPlugin {
         return new String[] {
                 "info.tritusk.insanepatcher.PatcherGourmaryllis",
                 "info.tritusk.insanepatcher.PatcherSextiarySectorMana",
-                "info.tritusk.insanepatcher.PatcherCulinaryGenerator"
+                "info.tritusk.insanepatcher.PatcherCulinaryGenerator",
+                "info.tritusk.insanepatcher.PatcherBambooFood"
         };
     }
 
