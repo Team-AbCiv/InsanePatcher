@@ -25,7 +25,7 @@ public class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override
     public String getSetupClass() {
-        return null;
+        return "info.tritusk.insanepatcher.InsanePatcherSetup";
     }
 
     @Override

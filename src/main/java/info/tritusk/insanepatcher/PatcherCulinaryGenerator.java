@@ -10,6 +10,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class PatcherCulinaryGenerator implements IClassTransformer {
 
+    private static final String METHOD_GET_ITEM = InsanePatcherSetup.isInRuntime() ? "func_77973_b" : "getItem";
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("com.rwtema.extrautils.tileentity.generators.TileEntityGeneratorFood")) {
@@ -42,7 +44,7 @@ public class PatcherCulinaryGenerator implements IClassTransformer {
                 methodGenLevelGetter.visitInsn(Opcodes.DRETURN);
                 methodGenLevelGetter.visitLabel(labelCakeCheck0);
                 methodGenLevelGetter.visitVarInsn(Opcodes.ALOAD, 1);
-                methodGenLevelGetter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", "getItem", "()Lnet/minecraft/item/Item;", false);
+                methodGenLevelGetter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", METHOD_GET_ITEM, "()Lnet/minecraft/item/Item;", false);
                 methodGenLevelGetter.visitFieldInsn(Opcodes.GETSTATIC, "net/minecraft/init/Items", "cake", "Lnet/minecraft/item/Item;");
                 methodGenLevelGetter.visitJumpInsn(Opcodes.IF_ACMPNE, labelInvalidCheck0);
                 methodGenLevelGetter.visitLdcInsn(64.0D);
@@ -74,7 +76,7 @@ public class PatcherCulinaryGenerator implements IClassTransformer {
                 methodFuelBurnGetter.visitInsn(Opcodes.DRETURN);
                 methodFuelBurnGetter.visitLabel(labelCakeCheck1);
                 methodFuelBurnGetter.visitVarInsn(Opcodes.ALOAD, 1);
-                methodFuelBurnGetter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", "getItem", "()Lnet/minecraft/item/Item;", false);
+                methodFuelBurnGetter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", METHOD_GET_ITEM, "()Lnet/minecraft/item/Item;", false);
                 methodFuelBurnGetter.visitFieldInsn(Opcodes.GETSTATIC, "net/minecraft/init/Items", "cake", "Lnet/minecraft/item/Item;");
                 methodFuelBurnGetter.visitJumpInsn(Opcodes.IF_ACMPNE, labelInvalidCheck1);
                 methodFuelBurnGetter.visitLdcInsn(1500.0D);
