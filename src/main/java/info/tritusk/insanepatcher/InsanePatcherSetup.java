@@ -15,7 +15,6 @@ public class InsanePatcherSetup implements IFMLCallHook {
 
     @Override
     public Void call() throws Exception {
-        System.out.println("Being called");
         return null;
     }
 

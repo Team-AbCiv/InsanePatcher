@@ -8,6 +8,9 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class PatcherBambooFood implements IClassTransformer {
+
+    private static final String GET_META = InsanePatcherSetup.isInRuntime() ? "func_77960_j" : "getItemDamage";
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("ruby.bamboo.item.ItemBambooFood")) {
@@ -15,15 +18,13 @@ public class PatcherBambooFood implements IClassTransformer {
             ClassNode node = new ClassNode();
             reader.accept(node, 0);
 
-            node.methods.forEach(m -> System.out.println(m.name));
-
             MethodNode method = node.methods.stream().filter(m -> m.name.equals("func_150905_g")).findFirst().get();
 
             if (method != null) {
                 method.instructions.clear();
                 method.visitFieldInsn(Opcodes.GETSTATIC, "ruby/bamboo/item/ItemBambooFood", "foodMap", "Ljava/util/Map;");
                 method.visitVarInsn(Opcodes.ALOAD, 1);
-                method.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", "getItemDamage", "()I", false);
+                method.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", GET_META, "()I", false);
                 method.visitFieldInsn(Opcodes.GETSTATIC, "ruby/bamboo/item/ItemBambooFood", "MAX_ELEMENT_COUNT", "I");
                 method.visitInsn(Opcodes.IREM);
                 method.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
