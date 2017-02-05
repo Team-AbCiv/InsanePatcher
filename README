@@ -13,4 +13,5 @@ Feature list:
 * Fix the bug of "repairing" ThermalExpansion stuff which yield into creative-only stuff
 * Fix a crash when both ThermalFoundation and SextiarySector present
 * Make Extra Utilities' Culinary Generator be affected by Hunger Overhaul
-* Make food from BambooMod return their food value properly, so that AppleCore won't function abnormally. 
+* Make food from BambooMod return their food value properly, so that AppleCore won't function abnormally.
+* Make ic2 canned food recognizable for Gourmaryllis and Culinary Generator, as well as AppleCore
