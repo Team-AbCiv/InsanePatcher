@@ -1,11 +1,14 @@
 package info.tritusk.insanepatcher;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import squeek.applecore.api.food.FoodEvent;
 import squeek.applecore.api.food.FoodValues;
 import squeek.applecore.api.food.IEdible;
+
+import javax.annotation.Nullable;
 
 public class FoodUtil {
 
@@ -17,23 +20,46 @@ public class FoodUtil {
         }
     }
 
-    public static int getHungerValueRegen(ItemStack stack) {
-        if (Constants.APPLECORE_EXIST) {
-            FoodValues foodValues;
-            if (stack.getItem() instanceof IEdible) {
-                foodValues = ((IEdible)stack.getItem()).getFoodValues(stack);
-            } else if (stack.getItem() instanceof ItemFood) {
-                foodValues = new FoodValues(
-                        ((ItemFood)stack.getItem()).func_150905_g(stack),
-                        ((ItemFood)stack.getItem()).func_150906_h(stack));
-            } else {
-                // Only vanilla ItemFood and AppleCore are supported, vanilla cake exclusive
-                // otherwise return 0 for default implementation
-                return 0;
-            }
-            FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, foodValues);
+    public static FoodValues getFoodValues(ItemStack stack) {
+        return getFoodValues(stack, null);
+    }
+
+    public static FoodValues getFoodValues(ItemStack stack, @Nullable EntityPlayer player) {
+        FoodValues originValues;
+        if (stack.getItem() instanceof IEdible) {
+            originValues = ((IEdible)stack.getItem()).getFoodValues(stack);
+        } else if (stack.getItem() instanceof ItemFood) {
+            originValues = new FoodValues(
+                    ((ItemFood)stack.getItem()).func_150905_g(stack),
+                    ((ItemFood)stack.getItem()).func_150906_h(stack));
+        } else {
+            // Only vanilla ItemFood and AppleCore are supported, vanilla cake exclusive
+            // otherwise return a dummy one for default implementation
+            originValues = new FoodValues(0, 0F);
+            return originValues;
+        }
+        if (player == null) {
+            FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, originValues);
             MinecraftForge.EVENT_BUS.post(event);
-            return event.foodValues.hunger;
+            return event.foodValues;
+        } else {
+            FoodEvent.GetPlayerFoodValues event = new FoodEvent.GetPlayerFoodValues(player, stack, originValues);
+            MinecraftForge.EVENT_BUS.post(event);
+            return event.foodValues;
+        }
+    }
+
+    public static int getHungerValueRegen(ItemStack stack) {
+        return getHungerValueRegen(stack, null);
+    }
+
+    public static int getHungerValueRegen(ItemStack stack, @Nullable EntityPlayer player) {
+        if (Constants.APPLECORE_EXIST) {
+            if (player == null) {
+                return getFoodValues(stack).hunger;
+            } else {
+                return getFoodValues(stack, player).hunger;
+            }
         } else if (stack.getItem() instanceof ItemFood) {
             return ((ItemFood)stack.getItem()).func_150905_g(stack);
         } else {
@@ -42,21 +68,16 @@ public class FoodUtil {
     }
 
     public static float getSaturationModifier(ItemStack stack) {
+        return getSaturationModifier(stack, null);
+    }
+
+    public static float getSaturationModifier(ItemStack stack, @Nullable EntityPlayer player) {
         if (Constants.APPLECORE_EXIST) {
-            FoodValues foodValues;
-            if (stack.getItem() instanceof IEdible) {
-                foodValues = ((IEdible)stack.getItem()).getFoodValues(stack);
-            } else if (stack.getItem() instanceof ItemFood) {
-                foodValues = new FoodValues(
-                        ((ItemFood)stack.getItem()).func_150905_g(stack),
-                        ((ItemFood)stack.getItem()).func_150906_h(stack));
+            if (player == null) {
+                return getFoodValues(stack).saturationModifier;
             } else {
-                //Only vanilla ItemFood and AppleCore are supported, otherwise return 0 for default implementation
-                return 0;
+                return getFoodValues(stack, player).saturationModifier;
             }
-            FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, foodValues);
-            MinecraftForge.EVENT_BUS.post(event);
-            return event.foodValues.saturationModifier;
         } else if (stack.getItem() instanceof ItemFood) {
             return ((ItemFood)stack.getItem()).func_150905_g(stack);
         } else {
