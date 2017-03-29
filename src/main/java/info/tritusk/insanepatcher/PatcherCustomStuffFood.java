@@ -11,12 +11,6 @@ import java.util.Iterator;
 
 public class PatcherCustomStuffFood implements IClassTransformer {
 
-    private static final String GET_META = InsanePatcherSetup.isInRuntime() ? "func_77960_j" : "getItemDamage";
-    private static final String GET_FOODSTATE = InsanePatcherSetup.isInRuntime() ? "func_71024_bL" : "getFoodStats";
-    private static final String ADD_STATE = InsanePatcherSetup.isInRuntime() ? "func_75122_a" : "addStats";
-    private static final String ON_FOOD_EATEN = InsanePatcherSetup.isInRuntime() ? "func_77654_b" : "onEaten";
-    private static final String STACK_SIZE = InsanePatcherSetup.isInRuntime() ? "field_77994_a" : "stackSize";
-
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (transformedName.equals("cubex2.cs2.item.ItemCSFood")) {
@@ -25,7 +19,10 @@ public class PatcherCustomStuffFood implements IClassTransformer {
             reader.accept(node, 0);
 
             node.interfaces.add("squeek/applecore/api/food/IEdible");
-            MethodNode onFoodEaten = node.methods.stream().filter(m -> m.name.equals(ON_FOOD_EATEN)).findFirst().orElseThrow(Error::new);
+
+            MethodNode onFoodEaten = node.methods.stream().filter(m -> m.name.equals("func_77654_b") || m.name.equals("onEaten")).findFirst().orElseThrow(Error::new);
+            final boolean runtime = onFoodEaten.name.equals("func_77654_b");
+
             Iterator<AbstractInsnNode> itr = onFoodEaten.instructions.iterator();
             while (itr.hasNext()) {
                 AbstractInsnNode insn = itr.next();
@@ -34,14 +31,13 @@ public class PatcherCustomStuffFood implements IClassTransformer {
                     break;
                 }
             }
-
             InsnList insnListToAppend = new InsnList();
             insnListToAppend.add(new InsnNode(Opcodes.ICONST_1));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 1));
-            insnListToAppend.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/item/ItemStack", STACK_SIZE, "I"));
+            insnListToAppend.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/item/ItemStack", runtime ? "field_77994_a" : "stackSize", "I"));
             insnListToAppend.add(new InsnNode(Opcodes.ISUB));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 3));
-            insnListToAppend.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/entity/player/EntityPlayer", GET_FOODSTATE, "()Lnet/minecraft/util/FoodStats;", false));
+            insnListToAppend.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/entity/player/EntityPlayer", runtime ? "func_71024_bL" : "getFoodStats", "()Lnet/minecraft/util/FoodStats;", false));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 1));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 3));
             insnListToAppend.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "info/tritusk/insanepatcher/FoodUtil", "getFoodValues", "(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/EntityPlayer;)Lsqueek/applecore/api/food/FoodValues;", false));
@@ -50,12 +46,12 @@ public class PatcherCustomStuffFood implements IClassTransformer {
             insnListToAppend.add(new FieldInsnNode(Opcodes.GETFIELD, "squeek/applecore/api/food/FoodValues", "hunger", "I"));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 4));
             insnListToAppend.add(new FieldInsnNode(Opcodes.GETFIELD, "squeek/applecore/api/food/FoodValues", "saturationModifier", "F"));
-            insnListToAppend.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/FoodStats", ADD_STATE, "(IF)V", false));
-            onFoodEaten.instructions.insert(onFoodEaten.instructions.getFirst(), insnListToAppend);
+            insnListToAppend.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/FoodStats", runtime ? "func_75122_a" : "addStats", "(IF)V", false));
+            onFoodEaten.instructions.insertBefore(onFoodEaten.instructions.getFirst(), insnListToAppend);
 
             MethodVisitor getFoodValues = node.visitMethod(Opcodes.ACC_PUBLIC, "getFoodValues", "(Lnet/minecraft/item/ItemStack;)Lsqueek/applecore/api/food/FoodValues;", null, null);
             getFoodValues.visitVarInsn(Opcodes.ALOAD, 1);
-            getFoodValues.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", GET_META, "()I", false);
+            getFoodValues.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", runtime ? "func_77960_j" : "getItemDamage", "()I", false);
             getFoodValues.visitVarInsn(Opcodes.ISTORE, 4);
             getFoodValues.visitTypeInsn(Opcodes.NEW, "squeek/applecore/api/food/FoodValues");
             getFoodValues.visitInsn(Opcodes.DUP);
