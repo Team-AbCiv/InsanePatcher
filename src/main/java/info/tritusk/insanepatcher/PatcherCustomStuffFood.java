@@ -32,10 +32,12 @@ public class PatcherCustomStuffFood implements IClassTransformer {
                 }
             }
             InsnList insnListToAppend = new InsnList();
-            insnListToAppend.add(new InsnNode(Opcodes.ICONST_1));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 1));
+            insnListToAppend.add(new InsnNode(Opcodes.DUP));
             insnListToAppend.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/item/ItemStack", runtime ? "field_77994_a" : "stackSize", "I"));
+            insnListToAppend.add(new InsnNode(Opcodes.ICONST_1));
             insnListToAppend.add(new InsnNode(Opcodes.ISUB));
+            insnListToAppend.add(new FieldInsnNode(Opcodes.PUTFIELD, "net/minecraft/item/ItemStack", runtime ? "field_77994_a" : "stackSize", "I"));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 3));
             insnListToAppend.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/entity/player/EntityPlayer", runtime ? "func_71024_bL" : "getFoodStats", "()Lnet/minecraft/util/FoodStats;", false));
             insnListToAppend.add(new VarInsnNode(Opcodes.ALOAD, 1));
