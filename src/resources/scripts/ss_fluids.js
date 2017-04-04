@@ -1,6 +1,6 @@
-var method = node.methods.stream().filter(function (method) {
+var method = node.methods.stream().filter(function (method){
     return method.name.equals("initFluids");
-}).findFirst().orElseThrow(function () {
+}).findFirst().orElseThrow(function (){
     return new java.lang.Error();
 });
 
@@ -10,7 +10,7 @@ var itr = method.instructions.iterator();
 
 while (itr.hasNext()) {
     var next = itr.next();
-    if (next instanceof LdcInsnNode) {
+    if (next.getOpcode() == opcodes.LDC) {
         if (next.cst.equals("Mana")) { // TODO: make sure we cast the type
             ldcString = next;
             break;

@@ -6,7 +6,7 @@ getFoodValues.visitTypeInsn(opcodes.NEW, "squeek/applecore/api/food/FoodValues")
 getFoodValues.visitInsn(opcodes.DUP);
 getFoodValues.visitInsn(opcodes.ICONST_1);
 getFoodValues.visitVarInsn(opcodes.ALOAD, 1);
-getFoodValues.visitFieldInsn(opcodes.GETFIELD, "net/minecraft/item/ItemStack", "stackSize", "I");
+getFoodValues.visitFieldInsn(opcodes.GETFIELD, "net/minecraft/item/ItemStack", "stackSize", "I"); //TODO: let it work in runtime
 getFoodValues.visitInsn(opcodes.ICONST_2);
 getFoodValues.visitInsn(opcodes.IMUL);
 getFoodValues.visitInsn(opcodes.I2F);
