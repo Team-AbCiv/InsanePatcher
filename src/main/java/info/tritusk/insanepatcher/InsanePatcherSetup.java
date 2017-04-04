@@ -1,7 +1,9 @@
 package info.tritusk.insanepatcher;
 
 import cpw.mods.fml.relauncher.IFMLCallHook;
+import org.lwjgl.Sys;
 
+import java.io.File;
 import java.util.Map;
 
 public class InsanePatcherSetup implements IFMLCallHook {
@@ -10,6 +12,7 @@ public class InsanePatcherSetup implements IFMLCallHook {
 
     @Override
     public void injectData(Map<String, Object> data) {
+        InsanePatcherScriptingEngine.setupInsaneScripting((File)data.get("mcLocation"), (File)data.get("coremodLocation"));
         isInRuntime = (Boolean)data.get("runtimeDeobfuscationEnabled");
     }
 
