@@ -19,8 +19,8 @@ public class PatcherCulinaryGenerator implements IClassTransformer {
             ClassNode node = new ClassNode();
             reader.accept(node, 0);
 
-            MethodNode methodGenLevelGetter = node.methods.stream().filter(m -> m.name.equals("getGenLevelForStack")).findFirst().get();
-            MethodNode methodFuelBurnGetter = node.methods.stream().filter(m -> m.name.equals("getFuelBurn")).findFirst().get();
+            MethodNode methodGenLevelGetter = node.methods.stream().filter(m -> m.name.equals("getGenLevelForStack")).findFirst().orElseThrow(Error::new);
+            MethodNode methodFuelBurnGetter = node.methods.stream().filter(m -> m.name.equals("getFuelBurn")).findFirst().orElseThrow(Error::new);
 
             if (methodFuelBurnGetter != null && methodGenLevelGetter != null) {
                 methodGenLevelGetter.instructions.clear();

@@ -19,7 +19,7 @@ public class PatcherSextiarySectorMana implements IClassTransformer {
             ClassNode node = new ClassNode();
             reader.accept(node, 0);
 
-            MethodNode method = node.methods.stream().filter(m -> m.name.equals("initFluids")).findFirst().get();
+            MethodNode method = node.methods.stream().filter(m -> m.name.equals("initFluids")).findFirst().orElseThrow(Error::new);
 
             AbstractInsnNode ldcString = null;
             Iterator<AbstractInsnNode> itr = method.instructions.iterator();

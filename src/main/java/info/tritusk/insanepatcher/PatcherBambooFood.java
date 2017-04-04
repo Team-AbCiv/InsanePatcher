@@ -18,7 +18,7 @@ public class PatcherBambooFood implements IClassTransformer {
             ClassNode node = new ClassNode();
             reader.accept(node, 0);
 
-            MethodNode method = node.methods.stream().filter(m -> m.name.equals("func_150905_g")).findFirst().get();
+            MethodNode method = node.methods.stream().filter(m -> m.name.equals("func_150905_g")).findFirst().orElseThrow(Error::new);
 
             if (method != null) {
                 method.instructions.clear();
