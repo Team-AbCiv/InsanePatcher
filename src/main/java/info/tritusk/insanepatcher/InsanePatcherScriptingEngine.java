@@ -56,6 +56,7 @@ public final class InsanePatcherScriptingEngine {
 
         try {
             ENGINE.eval("var foodUtil = info.tritusk.insanepatcher.FoodUtil");
+            ENGINE.eval("var opcodes = org.objectweb.asm.Opcodes");
         } catch (ScriptException e) {
             e.printStackTrace();
         }

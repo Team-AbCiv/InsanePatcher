@@ -15,7 +15,6 @@ public class InsanePatcher implements IFMLLoadingPlugin {
                 "info.tritusk.insanepatcher.PatcherGourmaryllis",
                 "info.tritusk.insanepatcher.PatcherCulinaryGenerator",
                 "info.tritusk.insanepatcher.PatcherBambooFood",
-                "info.tritusk.insanepatcher.PatcherIC2CannedFood",
                 "info.tritusk.insanepatcher.PatcherCustomStuffFood",
                 "info.tritusk.insanepatcher.InsanePatcherMain"
         };
