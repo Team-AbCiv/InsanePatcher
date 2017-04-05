@@ -12,10 +12,9 @@ import java.util.Collections;
 
 public class InsanePatcherContainer extends DummyModContainer {
 
-    private static final ModMetadata METADATA;
+    private static final ModMetadata METADATA = new ModMetadata();
 
     static {
-        METADATA = new ModMetadata();
         METADATA.modId = "insane_patcher";
         METADATA.name = "InsanePatcher";
         METADATA.version = "@VERSION@";
