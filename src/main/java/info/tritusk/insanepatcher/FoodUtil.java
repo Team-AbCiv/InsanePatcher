@@ -1,5 +1,6 @@
 package info.tritusk.insanepatcher;
 
+import cpw.mods.fml.common.Loader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -12,8 +13,10 @@ import javax.annotation.Nullable;
 
 public class FoodUtil {
 
+    private static final boolean APPLECORE_EXIST = Loader.isModLoaded("AppleCore");
+
     public static boolean isFood(ItemStack stack) {
-        if (Constants.APPLECORE_EXIST) {
+        if (APPLECORE_EXIST) {
             return stack.getItem() instanceof IEdible || stack.getItem() instanceof ItemFood;
         } else {
             return stack.getItem() instanceof ItemFood;
@@ -25,27 +28,31 @@ public class FoodUtil {
     }
 
     public static FoodValues getFoodValues(ItemStack stack, @Nullable EntityPlayer player) {
-        FoodValues originValues;
-        if (stack.getItem() instanceof IEdible) {
-            originValues = ((IEdible)stack.getItem()).getFoodValues(stack);
-        } else if (stack.getItem() instanceof ItemFood) {
-            originValues = new FoodValues(
-                    ((ItemFood)stack.getItem()).func_150905_g(stack),
-                    ((ItemFood)stack.getItem()).func_150906_h(stack));
+        if (APPLECORE_EXIST) {
+            FoodValues originValues;
+            if (stack.getItem() instanceof IEdible) {
+                originValues = ((IEdible)stack.getItem()).getFoodValues(stack);
+            } else if (stack.getItem() instanceof ItemFood) {
+                originValues = new FoodValues(
+                        ((ItemFood)stack.getItem()).func_150905_g(stack),
+                        ((ItemFood)stack.getItem()).func_150906_h(stack));
+            } else {
+                // Only vanilla ItemFood and AppleCore are supported, vanilla cake exclusive
+                // otherwise return a dummy one for default implementation
+                originValues = new FoodValues(0, 0F);
+                return originValues;
+            }
+            if (player == null) {
+                FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, originValues);
+                MinecraftForge.EVENT_BUS.post(event);
+                return event.foodValues;
+            } else {
+                FoodEvent.GetPlayerFoodValues event = new FoodEvent.GetPlayerFoodValues(player, stack, originValues);
+                MinecraftForge.EVENT_BUS.post(event);
+                return event.foodValues;
+            }
         } else {
-            // Only vanilla ItemFood and AppleCore are supported, vanilla cake exclusive
-            // otherwise return a dummy one for default implementation
-            originValues = new FoodValues(0, 0F);
-            return originValues;
-        }
-        if (player == null) {
-            FoodEvent.GetFoodValues event = new FoodEvent.GetFoodValues(stack, originValues);
-            MinecraftForge.EVENT_BUS.post(event);
-            return event.foodValues;
-        } else {
-            FoodEvent.GetPlayerFoodValues event = new FoodEvent.GetPlayerFoodValues(player, stack, originValues);
-            MinecraftForge.EVENT_BUS.post(event);
-            return event.foodValues;
+            throw new IllegalStateException("AppleCore is not installed.");
         }
     }
 
@@ -54,7 +61,7 @@ public class FoodUtil {
     }
 
     public static int getHungerValueRegen(ItemStack stack, @Nullable EntityPlayer player) {
-        if (Constants.APPLECORE_EXIST) {
+        if (APPLECORE_EXIST) {
             if (player == null) {
                 return getFoodValues(stack).hunger;
             } else {
@@ -72,7 +79,7 @@ public class FoodUtil {
     }
 
     public static float getSaturationModifier(ItemStack stack, @Nullable EntityPlayer player) {
-        if (Constants.APPLECORE_EXIST) {
+        if (APPLECORE_EXIST) {
             if (player == null) {
                 return getFoodValues(stack).saturationModifier;
             } else {

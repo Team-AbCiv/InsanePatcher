@@ -12,8 +12,9 @@ public class InsanePatcherSetup implements IFMLCallHook {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        InsanePatcherScriptingEngine.setupInsaneScripting((File)data.get("mcLocation"), (File)data.get("coremodLocation"));
+        InsanePatcherScriptingEngine.setupInsaneScripting((File)data.get("mcLocation"));
         isInRuntime = (Boolean)data.get("runtimeDeobfuscationEnabled");
+        InsanePatcherScriptingEngine.LOG.info("Successfully setup InsanePatcher scripting engine.");
     }
 
     @Override

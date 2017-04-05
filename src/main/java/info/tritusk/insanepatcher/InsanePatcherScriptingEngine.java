@@ -1,18 +1,27 @@
 package info.tritusk.insanepatcher;
 
-import org.apache.commons.io.IOUtils;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Map;
 import java.util.Properties;
 import java.util.HashMap;
-import java.util.jar.JarFile;
 
 public final class InsanePatcherScriptingEngine {
+
+    static final Logger LOG = LogManager.getLogger("InsanePatcherScriptingEngine");
 
     private InsanePatcherScriptingEngine() {}
 
@@ -20,59 +29,47 @@ public final class InsanePatcherScriptingEngine {
 
     private static final Map<String, Reader> TRANSFORMERS = new HashMap<>();
 
-    static void setupInsaneScripting(File mcLocation, File jarItself) {
-        final File scriptFolder = new File(mcLocation, "insane_patchers");
-        if (!scriptFolder.exists() || !scriptFolder.isDirectory()) {
-            if (scriptFolder.mkdir()) {
-                if (jarItself != null && jarItself.exists() && jarItself.isFile()) {
-                    try {
-                        final JarFile jf = new JarFile(jarItself);
-                        jf.stream().filter(entry -> entry.getName().startsWith("scripts")).forEach(entry -> {
-                            try {
-                                IOUtils.copy(jf.getInputStream(entry), new FileOutputStream(new File(scriptFolder, entry.getName().substring(8))));
-                            } catch (IOException ignored) {}
-                        });
-                    } catch (IOException e) {
-                        System.err.println("Failed on release bundled patchers. You may want to download them manually.");
-                    }
-                } else {
-                    System.out.println("Well we didn't get the jar... either we are in dev environment, or nothing we really can deal with it.");
-                }
+    private static boolean firstTime = false;
+
+    static void setupInsaneScripting(File mcLocation) {
+        final File scripts = new File(mcLocation, "insane_patchers");
+        if (!scripts.exists() || !scripts.isDirectory()) {
+            if (scripts.mkdir()) {
+                firstTime = true;
+                return;
             }
         }
 
-        final File cfgFile = new File(scriptFolder, "target.properties");
-        Properties cfg = new Properties();
         try {
-            cfg.load(new FileInputStream(cfgFile));
-        } catch (IOException failOnLoad) {
-            System.err.println("Failed on setting up config, please manually setup your config file");
-        }
-        cfg.stringPropertyNames().forEach(className -> {
-            try {
-                TRANSFORMERS.putIfAbsent(className, new FileReader(new File(scriptFolder, cfg.getProperty(className))));
-            } catch (FileNotFoundException ignored) {}
-        });
-
-        try {
-            ENGINE.eval("var foodUtil = info.tritusk.insanepatcher.FoodUtil");
             ENGINE.eval("var opcodes = org.objectweb.asm.Opcodes");
         } catch (ScriptException e) {
-            e.printStackTrace();
+            LOG.catching(e);
         }
 
+        Properties cfg = new Properties();
+        try {
+            cfg.load(FileUtils.openInputStream(new File(scripts, "target.properties")));
+            cfg.stringPropertyNames().forEach(className -> {
+                try {
+                    TRANSFORMERS.putIfAbsent(className, Files.newReader(new File(scripts, cfg.getProperty(className)), Charsets.UTF_8));
+                } catch (FileNotFoundException ignored) {}
+            });
+        } catch (IOException failOnLoad) {
+            LOG.error("Failed on setting up config, please manually setup your config file.");
+        }
     }
 
     static void process(String transformedName, ClassNode node) {
         try {
+            ENGINE.setBindings(ENGINE.createBindings(), ScriptContext.ENGINE_SCOPE);
             ENGINE.put("node", node);
             ENGINE.eval(TRANSFORMERS.get(transformedName));
         } catch (ScriptException e) {
-            e.printStackTrace();
+            LOG.catching(e);
         }
     }
 
     static boolean shouldTransform(String transformedName) {
-        return TRANSFORMERS.containsKey(transformedName);
+        return !firstTime && TRANSFORMERS.containsKey(transformedName);
     }
 }
