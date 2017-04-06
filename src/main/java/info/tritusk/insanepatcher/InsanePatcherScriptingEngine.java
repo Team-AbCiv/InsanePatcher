@@ -35,11 +35,9 @@ public final class InsanePatcherScriptingEngine {
 
     static void setupInsaneScripting(File mcLocation) {
         final File scripts = new File(mcLocation, "insane_patchers");
-        if (!scripts.exists() || !scripts.isDirectory()) {
-            if (scripts.mkdir()) {
-                firstTime = true;
-                return;
-            }
+        if ((!scripts.exists() || !scripts.isDirectory()) && scripts.mkdir()) {
+            firstTime = true;
+            return;
         }
 
         Properties cfg = new Properties();

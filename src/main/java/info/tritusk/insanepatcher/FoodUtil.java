@@ -11,7 +11,7 @@ import squeek.applecore.api.food.IEdible;
 
 import javax.annotation.Nullable;
 
-public class FoodUtil {
+public final class FoodUtil {
 
     private static final boolean APPLECORE_EXIST = Loader.isModLoaded("AppleCore");
 

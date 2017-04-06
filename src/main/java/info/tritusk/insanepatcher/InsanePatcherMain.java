@@ -16,11 +16,11 @@ public class InsanePatcherMain implements IClassTransformer {
                 InsanePatcherScriptingEngine.process(transformedName, node);
             } catch (Throwable throwable) {
                 if (InsanePatcherScriptingEngine.DEBUG) {
-                    InsanePatcherScriptingEngine.LOG.error("Error occured while transforming " + transformedName, throwable);
+                    InsanePatcherScriptingEngine.LOG.error("Error occurred while transforming " + transformedName, throwable);
                 }
                 return basicClass;
             }
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             node.accept(writer);
             return writer.toByteArray();
         } else {
