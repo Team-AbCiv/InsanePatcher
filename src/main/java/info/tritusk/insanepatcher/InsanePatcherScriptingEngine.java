@@ -2,7 +2,6 @@ package info.tritusk.insanepatcher;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
