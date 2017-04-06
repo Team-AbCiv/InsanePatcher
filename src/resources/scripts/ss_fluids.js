@@ -1,3 +1,5 @@
+var Opcodes = org.objectweb.asm.Opcodes;
+
 var method = node.methods.stream().filter(function (method){
     return method.name.equals("initFluids");
 }).findFirst().orElseThrow(function (){
@@ -10,7 +12,7 @@ var itr = method.instructions.iterator();
 
 while (itr.hasNext()) {
     var next = itr.next();
-    if (next.getOpcode() == opcodes.LDC) {
+    if (next.getOpcode() == Opcodes.LDC) {
         if (next.cst.equals("Mana")) { // TODO: make sure we cast the type
             ldcString = next;
             break;

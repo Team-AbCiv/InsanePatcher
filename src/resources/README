@@ -10,20 +10,35 @@ Trigger transformer -> Check class name -> Transform the class on needed -> ??? 
 The workflow is managed by the mod on its own.
 For those who want tobe insane and write scripts, they just need to the following:
 
-  0. Make sure you know what you are going to do. Avoid using class transformer as much as possible
+  0. Make sure you know what you are going to do.
+     Avoid using class transformer as much as possible.
   1. Check if there is a folder named "insane_patchers" at their game directory.
-     The exact location depends on launcher choices, but usually it is named "minecraft" or ".minecraft".
+     The exact location depends on launcher choices, but usually it is named
+     "minecraft" or ".minecraft".
   2. Open it; or create it if not found.
   3. Open a file named target.properties; or create it if not found.
   4. As the extension name indicated, this is Java properties file.
      One line per entry.
-     The key is the canonical name of the class you want to transform; value is the name of corresponding script file.
+     The key is the canonical name of the class you want to transform; value is the
+     name of corresponding script file.
      Example:
      `info.tritusk.insanepatcher.InsaneClass=insane.js`
-     which will tell this mod to use "insane.js" to transform the class "info.tritusk.insanepatcher.InsaneClass"
+     which will tell this mod to use "insane.js" to transform the class "
+     info.tritusk.insanepatcher.InsaneClass"
      (of neither the script nor class really exist)
   5. Specification of the scripts:
       1. Pre-defined variable "node" represents the ClassNode (org.objectweb.asm.tree.ClassNode)
-      2. You may access any Java class upon this point; while you must access them with their full, canonical name.
+      2. You may access any Java class upon this point; while you must access them
+         with their full, canonical name.
+      3. You have to use the srg name for method/field name in Minecraft classes,
+         because MinecraftForge/FML is built on top of MCP.
+
+The bundled scripts are all in "scripts" folder and can be used as examples. Here is an overview:
+* botania_gourmaryllis.js - Let Gourmaryllis accept AppleCore's IEdible as valid food type
+* ss_fluids.js - Fix a crash when both ThermalFoundation and SextiarySector present
+* xu2_culinary - Make Extra Utilities' Culinary Generator be affected by Hunger Overhaul
+* bamboo_mod_food.js - Make food from BambooMod return their food value properly, so that AppleCore won't function abnormally.
+* ic2_tin_can.js - Make ic2 canned food recognizable for Gourmaryllis and Culinary Generator, as well as AppleCore
+* cs2_food.js - Make custom food made by CustomStuff2 respects AppleCore
 
 This documentation is still a work-in-progress.

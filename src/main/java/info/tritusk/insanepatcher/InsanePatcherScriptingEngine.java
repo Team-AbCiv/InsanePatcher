@@ -2,6 +2,7 @@ package info.tritusk.insanepatcher;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,13 +24,15 @@ public final class InsanePatcherScriptingEngine {
 
     static final Logger LOG = LogManager.getLogger("InsanePatcherScriptingEngine");
 
-    private InsanePatcherScriptingEngine() {}
+    static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("insanepatcher.debug", "false"));
 
     private static final ScriptEngine ENGINE = new ScriptEngineManager(null).getEngineByName("nashorn");
 
     private static final Map<String, Reader> TRANSFORMERS = new HashMap<>();
 
     private static boolean firstTime = false;
+
+    private InsanePatcherScriptingEngine() {}
 
     static void setupInsaneScripting(File mcLocation) {
         final File scripts = new File(mcLocation, "insane_patchers");
@@ -38,12 +41,6 @@ public final class InsanePatcherScriptingEngine {
                 firstTime = true;
                 return;
             }
-        }
-
-        try {
-            ENGINE.eval("var opcodes = org.objectweb.asm.Opcodes");
-        } catch (ScriptException e) {
-            LOG.catching(e);
         }
 
         Properties cfg = new Properties();

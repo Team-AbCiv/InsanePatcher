@@ -14,7 +14,10 @@ public class InsanePatcherMain implements IClassTransformer {
             reader.accept(node, 0);
             try {
                 InsanePatcherScriptingEngine.process(transformedName, node);
-            } catch (Throwable discarded) {
+            } catch (Throwable throwable) {
+                if (InsanePatcherScriptingEngine.DEBUG) {
+                    InsanePatcherScriptingEngine.LOG.error("Error occured while transforming " + transformedName, throwable);
+                }
                 return basicClass;
             }
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);

@@ -1,3 +1,5 @@
+var Opcodes = org.objectweb.asm.Opcodes;
+
 var methodGetFoodValue = node.methods.stream().filter(function (m) {
     return m.name.equals("func_150905_g");
 }).findFirst().orElseThrow(function () {
@@ -5,16 +7,16 @@ var methodGetFoodValue = node.methods.stream().filter(function (m) {
 });
 
 methodGetFoodValue.instructions.clear();
-methodGetFoodValue.visitFieldInsn(opcodes.GETSTATIC, "ruby/bamboo/item/ItemBambooFood", "foodMap", "Ljava/util/Map;");
-methodGetFoodValue.visitVarInsn(opcodes.ALOAD, 1);
-methodGetFoodValue.visitMethodInsn(opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", "func_77960_j", "()I", false); //TODO: support dev env
-methodGetFoodValue.visitFieldInsn(opcodes.GETSTATIC, "ruby/bamboo/item/ItemBambooFood", "MAX_ELEMENT_COUNT", "I");
-methodGetFoodValue.visitInsn(opcodes.IREM);
-methodGetFoodValue.visitMethodInsn(opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-methodGetFoodValue.visitMethodInsn(opcodes.INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
-methodGetFoodValue.visitTypeInsn(opcodes.CHECKCAST, "ruby/bamboo/item/EnumFood");
-methodGetFoodValue.visitFieldInsn(opcodes.GETFIELD, "ruby/bamboo/item/EnumFood", "heal", "I");
-methodGetFoodValue.visitInsn(opcodes.IRETURN);
+methodGetFoodValue.visitFieldInsn(Opcodes.GETSTATIC, "ruby/bamboo/item/ItemBambooFood", "foodMap", "Ljava/util/Map;");
+methodGetFoodValue.visitVarInsn(Opcodes.ALOAD, 1);
+methodGetFoodValue.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/ItemStack", "func_77960_j", "()I", false);
+methodGetFoodValue.visitFieldInsn(Opcodes.GETSTATIC, "ruby/bamboo/item/ItemBambooFood", "MAX_ELEMENT_COUNT", "I");
+methodGetFoodValue.visitInsn(Opcodes.IREM);
+methodGetFoodValue.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+methodGetFoodValue.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
+methodGetFoodValue.visitTypeInsn(Opcodes.CHECKCAST, "ruby/bamboo/item/EnumFood");
+methodGetFoodValue.visitFieldInsn(Opcodes.GETFIELD, "ruby/bamboo/item/EnumFood", "heal", "I");
+methodGetFoodValue.visitInsn(Opcodes.IRETURN);
 methodGetFoodValue.visitEnd();
 
 // func_77960_j -> getItemDamage

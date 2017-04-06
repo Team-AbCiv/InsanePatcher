@@ -1,3 +1,7 @@
+var JumpInsnNode = org.objectweb.asm.tree.JumpInsnNode;
+var MethodInsnNode = org.objectweb.asm.tree.MethodInsnNode;
+var Opcodes = org.objectweb.asm.Opcodes;
+
 var methodOnUpdate = node.methods.stream().filter(function (m) {
     return m.name.equals("onUpdate");
 }).findFirst().orElseThrow(function () {
@@ -25,15 +29,15 @@ var itemFoodValueIvkVrtl = null;
 var itr = methodOnUpdate.instructions.iterator();
 while (itr.hasNext()) {
     var next = itr.next();
-    if (next.getOpcode() == opcodes.INVOKEVIRTUAL) {
-        if (((MethodInsnNode)next).name.equals("func_150905_g")) { // TODO: Figure out how to do TypeCast
+    if (next.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+        if (next.name.equals("func_150905_g")) { // You already knew the type by check the opcode.
             // func_150905_g is the method to get hunger value regen
             itemFoodValueIvkVrtl = next;
         }
-    } else if (next.getOpcode() == opcodes.INSTANCEOF) {
+    } else if (next.getOpcode() == Opcodes.INSTANCEOF) {
         itemFoodCheckIvkVrtl = next.getPrevious();
         itemFoodCheckInstanceof = next;
-    } else if (next.getOpcode() == opcodes.GOTO) {
+    } else if (next.getOpcode() == Opcodes.GOTO) {
         if (next.getNext().getNext().getNext().getNext().getNext().getNext() == null) {
             forLoopGoto = next;
         }
@@ -41,7 +45,7 @@ while (itr.hasNext()) {
 }
 
 if (itemFoodCheckIvkVrtl != null && itemFoodCheckInstanceof != null && forLoopGoto != null && itemFoodValueIvkVrtl != null) {
-    methodOnUpdate.instructions.set(itemFoodCheckIvkVrtl.getNext().getNext(), new JumpInsnNode(Opcodes.IFEQ, (LabelNode)forLoopGoto.getPrevious().getPrevious().getPrevious()));
+    methodOnUpdate.instructions.set(itemFoodCheckIvkVrtl.getNext().getNext(), new JumpInsnNode(Opcodes.IFEQ, forLoopGoto.getPrevious().getPrevious().getPrevious()));
     methodOnUpdate.instructions.set(itemFoodCheckIvkVrtl, new MethodInsnNode(Opcodes.INVOKESTATIC, "info/tritusk/insanepatcher/FoodUtil", "isFood", "(Lnet/minecraft/item/ItemStack;)Z", false));
     methodOnUpdate.instructions.remove(itemFoodCheckInstanceof);
 
