@@ -45,6 +45,10 @@ jar {
     }
 }
 
+sourceSets {
+    main.resources.srcDirs += "./src/resources/"
+}
+
 dependencies {
     compile "applecore:AppleCore:1.7.10-1.3.2+222.2ae0a:api"
 
