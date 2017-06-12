@@ -1,6 +1,6 @@
 package info.tritusk.insanepatcher;
 
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -34,8 +34,8 @@ public final class FoodUtil {
                 originValues = ((IEdible)stack.getItem()).getFoodValues(stack);
             } else if (stack.getItem() instanceof ItemFood) {
                 originValues = new FoodValues(
-                        ((ItemFood)stack.getItem()).func_150905_g(stack),
-                        ((ItemFood)stack.getItem()).func_150906_h(stack));
+                        ((ItemFood)stack.getItem()).getHealAmount(stack),
+                        ((ItemFood)stack.getItem()).getSaturationModifier(stack));
             } else {
                 // Only vanilla ItemFood and AppleCore are supported, vanilla cake exclusive
                 // otherwise return a dummy one for default implementation
@@ -68,7 +68,7 @@ public final class FoodUtil {
                 return getFoodValues(stack, player).hunger;
             }
         } else if (stack.getItem() instanceof ItemFood) {
-            return ((ItemFood)stack.getItem()).func_150905_g(stack);
+            return ((ItemFood)stack.getItem()).getHealAmount(stack);
         } else {
             return 0; // Cover all cases
         }
@@ -86,7 +86,7 @@ public final class FoodUtil {
                 return getFoodValues(stack, player).saturationModifier;
             }
         } else if (stack.getItem() instanceof ItemFood) {
-            return ((ItemFood)stack.getItem()).func_150905_g(stack);
+            return ((ItemFood)stack.getItem()).getSaturationModifier(stack);
         } else {
             return 0; // Cover all cases
         }

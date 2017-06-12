@@ -10,10 +10,10 @@ import org.objectweb.asm.tree.ClassNode;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 import java.util.Properties;
@@ -41,8 +41,8 @@ public final class InsanePatcherScriptingEngine {
         }
 
         Properties cfg = new Properties();
-        try {
-            cfg.load(FileUtils.openInputStream(new File(scripts, "target.properties")));
+        try (InputStream stream = FileUtils.openInputStream(new File(scripts, "target.properties"))) {
+            cfg.load(stream);
             cfg.stringPropertyNames().forEach(className -> {
                 try {
                     TRANSFORMERS.putIfAbsent(className, Files.newReader(new File(scripts, cfg.getProperty(className)), Charsets.UTF_8));
@@ -54,12 +54,12 @@ public final class InsanePatcherScriptingEngine {
     }
 
     static void process(String transformedName, ClassNode node) {
-        try {
+        try (Reader reader = TRANSFORMERS.remove(transformedName)){
             ENGINE.setBindings(ENGINE.createBindings(), ScriptContext.ENGINE_SCOPE);
             ENGINE.put("node", node);
-            ENGINE.eval(TRANSFORMERS.get(transformedName));
-        } catch (ScriptException e) {
-            LOG.catching(e);
+            ENGINE.eval(reader);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -1,25 +1,20 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
-apply plugin: 'forge'
-//apply plugin: 'maven'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.0.0"
-group = "insane_patcher"
+group = "info.tritusk.insanepatcher"
 archivesBaseName = "InsanePatcher"
 
 sourceCompatibility = 1.8
@@ -33,8 +28,10 @@ repositories {
 }
 
 minecraft {
-    version = "1.7.10-10.13.4.1614-1.7.10"
-    runDir = "eclipse"
+    version = "1.10.2-12.18.3.2316"
+    runDir = "run"
+
+    mappings = "stable_29"
 
     replace "@VERSION@", project.version
 }
@@ -45,12 +42,6 @@ jar {
     }
 }
 
-sourceSets {
-    main.resources.srcDirs += "./src/resources/"
-}
-
 dependencies {
-    compile "applecore:AppleCore:1.7.10-1.3.2+222.2ae0a:api"
-
-    runtime "applecore:AppleCore:1.7.10-1.3.2+222.2ae0a:deobf"
+    deobfCompile "applecore:AppleCore:1.10.2-2.1.2:deobf"
 }

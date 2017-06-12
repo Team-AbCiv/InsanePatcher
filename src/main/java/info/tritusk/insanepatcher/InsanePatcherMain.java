@@ -15,8 +15,9 @@ public class InsanePatcherMain implements IClassTransformer {
             try {
                 InsanePatcherScriptingEngine.process(transformedName, node);
             } catch (Throwable throwable) {
+                InsanePatcherScriptingEngine.LOG.error("Error occurred while transforming {}, changes will be ignored", transformedName);
                 if (InsanePatcherScriptingEngine.DEBUG) {
-                    InsanePatcherScriptingEngine.LOG.error("Error occurred while transforming " + transformedName, throwable);
+                    InsanePatcherScriptingEngine.LOG.catching(throwable);
                 }
                 return basicClass;
             }
