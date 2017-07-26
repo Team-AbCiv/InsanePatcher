@@ -33,12 +33,4 @@ For those who want tobe insane and write scripts, they just need to the followin
       3. You have to use the srg name for method/field name in Minecraft classes,
          because MinecraftForge/FML is built on top of MCP.
 
-The bundled scripts are all in "scripts" folder and can be used as examples. Here is an overview:
-* botania_gourmaryllis.js - Let Gourmaryllis accept AppleCore's IEdible as valid food type
-* ss_fluids.js - Fix a crash when both ThermalFoundation and SextiarySector present
-* xu2_culinary - Make Extra Utilities' Culinary Generator be affected by Hunger Overhaul
-* bamboo_mod_food.js - Make food from BambooMod return their food value properly, so that AppleCore won't function abnormally.
-* ic2_tin_can.js - Make ic2 canned food recognizable for Gourmaryllis and Culinary Generator, as well as AppleCore
-* cs2_food.js - Make custom food made by CustomStuff2 respects AppleCore
-
 This documentation is still a work-in-progress.

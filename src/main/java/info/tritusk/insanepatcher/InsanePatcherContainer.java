@@ -7,6 +7,15 @@ import net.minecraftforge.fml.common.ModMetadata;
 
 import java.util.Collections;
 
+/**
+ * @deprecated Not used besides providing metadata.
+ *             <p>
+ *             This class is scheduled to be removed once
+ *             there is a better way to provide metadata of
+ *             the mod itself.
+ *             </p>
+ */
+@Deprecated
 public class InsanePatcherContainer extends DummyModContainer {
 
     private static final ModMetadata METADATA = new ModMetadata();
