@@ -16,25 +16,21 @@ import java.util.Collections;
  *             </p>
  */
 @Deprecated
-public class InsanePatcherContainer extends DummyModContainer {
-
-    private static final ModMetadata METADATA = new ModMetadata();
-
-    static {
-        METADATA.modId = "insane_patcher";
-        METADATA.name = "InsanePatcher";
-        METADATA.version = "@VERSION@";
-        METADATA.authorList = Collections.singletonList("3TUSK");
-        METADATA.description = "Inefficiently and brutally patch minecraft mod things and stuff to allow modpack makers to have a easier life.";
-    }
+public final class InsanePatcherContainer extends DummyModContainer {
 
     public InsanePatcherContainer() {
-        super(METADATA);
+        super(new ModMetadata());
+        ModMetadata metadata = getMetadata();
+        metadata.modId = "insane_patcher";
+        metadata.name = "InsanePatcher";
+        metadata.version = "@VERSION@";
+        metadata.authorList = Collections.singletonList("3TUSK");
+        metadata.description = "Inefficiently and brutally patch minecraft mod things and stuff to allow modpack makers to have a easier life.";
     }
 
     @Override
     public boolean registerBus(EventBus bus, LoadController controller) {
-        bus.register(this);
+        // Not register into event bus, but still return true to ensure that FML knows it is active
         return true;
     }
 

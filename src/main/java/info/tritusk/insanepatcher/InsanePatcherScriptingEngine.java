@@ -37,6 +37,7 @@ public final class InsanePatcherScriptingEngine {
         final File scripts = new File(mcLocation, "insane_patchers");
         if ((!scripts.exists() || !scripts.isDirectory()) && scripts.mkdir()) {
             firstTime = true;
+            LOG.warn("Detecting fresh installation environment, generating necessary directory...");
             return;
         }
 
@@ -48,8 +49,9 @@ public final class InsanePatcherScriptingEngine {
                     TRANSFORMERS.putIfAbsent(className, Files.newReader(new File(scripts, cfg.getProperty(className)), Charsets.UTF_8));
                 } catch (FileNotFoundException ignored) {}
             });
+            LOG.info("Successfully setup InsanePatcher scripting engine.");
         } catch (IOException failOnLoad) {
-            LOG.error("Failed on setting up config, please manually setup your config file.");
+            LOG.error("Failed on parsing config, please double check your config file.");
         }
     }
 

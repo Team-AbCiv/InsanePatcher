@@ -1,16 +1,14 @@
 package info.tritusk.insanepatcher;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.io.File;
 import java.util.Map;
 
 @IFMLLoadingPlugin.Name("InsanePatcher")
-@IFMLLoadingPlugin.MCVersion("1.7.10")
+@IFMLLoadingPlugin.MCVersion("1.10.2")
 @IFMLLoadingPlugin.SortingIndex(987654721) // Reference to the 9876547210.33 incident; but that number cant fit into int
-public class InsanePatcher implements IFMLLoadingPlugin {
-
-    private static boolean isInRuntime;
+public final class InsanePatcher implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
@@ -30,8 +28,6 @@ public class InsanePatcher implements IFMLLoadingPlugin {
     @Override
     public void injectData(Map<String, Object> data) {
         InsanePatcherScriptingEngine.setupInsaneScripting((File)data.get("mcLocation"));
-        isInRuntime = (Boolean)data.get("runtimeDeobfuscationEnabled");
-        InsanePatcherScriptingEngine.LOG.info("Successfully setup InsanePatcher scripting engine.");
     }
 
     @Override
@@ -39,7 +35,4 @@ public class InsanePatcher implements IFMLLoadingPlugin {
         return null;
     }
 
-    public static boolean isIsInRuntime() {
-        return isInRuntime;
-    }
 }

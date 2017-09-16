@@ -5,7 +5,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
-public class InsanePatcherMain implements IClassTransformer {
+public final class InsanePatcherMain implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (InsanePatcherScriptingEngine.shouldTransform(transformedName)) {
