@@ -1,6 +1,5 @@
 package info.tritusk.insanepatcher;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,11 +14,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 import java.util.HashMap;
 
-public final class InsanePatcherScriptingEngine {
+final class InsanePatcherScriptingEngine {
 
     static final Logger LOG = LogManager.getLogger("InsanePatcherScriptingEngine");
 
@@ -35,23 +35,31 @@ public final class InsanePatcherScriptingEngine {
 
     static void setupInsaneScripting(File mcLocation) {
         final File scripts = new File(mcLocation, "insane_patchers");
-        if ((!scripts.exists() || !scripts.isDirectory()) && scripts.mkdir()) {
+        if (!scripts.exists() || !scripts.isDirectory()) {
             firstTime = true;
-            LOG.warn("Detecting fresh installation environment, generating necessary directory...");
+            LOG.warn("Detecting fresh installation environment, generating necessary files...");
+            if (scripts.mkdir()) {
+                try {
+                    FileUtils.touch(new File(scripts, "target.properties"));
+                } catch (IOException ignored) {}
+            }
             return;
         }
 
         Properties cfg = new Properties();
         try (InputStream stream = FileUtils.openInputStream(new File(scripts, "target.properties"))) {
             cfg.load(stream);
-            cfg.stringPropertyNames().forEach(className -> {
+            cfg.stringPropertyNames().forEach(clazz -> {
                 try {
-                    TRANSFORMERS.putIfAbsent(className, Files.newReader(new File(scripts, cfg.getProperty(className)), Charsets.UTF_8));
+                    TRANSFORMERS.putIfAbsent(clazz, Files.newReader(new File(scripts, cfg.getProperty(clazz)), StandardCharsets.UTF_8));
                 } catch (FileNotFoundException ignored) {}
             });
             LOG.info("Successfully setup InsanePatcher scripting engine.");
         } catch (IOException failOnLoad) {
             LOG.error("Failed on parsing config, please double check your config file.");
+            if (DEBUG) {
+                LOG.catching(failOnLoad);
+            }
         }
     }
 

@@ -1,1 +1,9 @@
 testsuit
+run
+*.iml
+*.ipr
+*.iws
+private.properties
+build
+out
+.gradle
